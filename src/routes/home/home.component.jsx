@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom';
 
 import Directory from '../../components/directory/directory.component';
+import { useEffect } from 'react';
+import { getCategoriesAndDocuments } from '../../utils/firebase/firebase.utils';
 
 const Home = () => {
   const categories = [
