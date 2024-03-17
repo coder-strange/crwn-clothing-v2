@@ -1,25 +1,27 @@
-import { useState, useContext } from 'react';
+import { useState, useContext } from "react";
 
-import FormInput from '../form-input/form-input.component';
-import Button from '../button/button.component';
+import FormInput from "../form-input/form-input.component";
+import Button from "../button/button.component";
 
 import {
   signInAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
-  signInWithGooglePopup
-} from '../../utils/firebase/firebase.utils';
+  signInWithGooglePopup,
+} from "../../utils/firebase/firebase.utils";
 
-import './sign-in-form.scss';
-import { UserContext } from '../../contexts/user.context';
+import "./sign-in-form.scss";
+import { useDispatch } from "react-redux";
+import { googleSignInStart } from "../../store/user/user.action";
 
 const defaultFormFields = {
-  email: '',
-  password: '',
+  email: "",
+  password: "",
 };
 
 const SignInForm = () => {
-  const [ formFields, setFormFields ] = useState(defaultFormFields);
+  const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
+  const dispatch = useDispatch();
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -37,18 +39,17 @@ const SignInForm = () => {
       resetFormFields();
     } catch (error) {
       switch (error.code) {
-        case 'auth/wrong-password':
-          alert('incorrect password for email');
+        case "auth/wrong-password":
+          alert("incorrect password for email");
           break;
-        case 'auth/user-not-found':
-          alert('no user associated with this email');
+        case "auth/user-not-found":
+          alert("no user associated with this email");
           break;
         default:
           console.log(error);
       }
     }
   };
-
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -57,46 +58,39 @@ const SignInForm = () => {
   };
 
   const signInWithGoogle = async () => {
-    const { user } = await signInWithGooglePopup();
-    const userDocRef = await createUserDocumentFromAuth(user);
-    console.log({ userDocRef })
-    // setCurrentUser(user)
-
+    dispatch(googleSignInStart());
   };
 
   return (
-    <div className='sign-up-container'>
+    <div className="sign-up-container">
       <h2>Don't have an account?</h2>
       <span>Sign up with your email and password</span>
       <form onSubmit={handleSubmit}>
-       
-
         <FormInput
-          label='Email'
-          type='email'
+          label="Email"
+          type="email"
           required
           onChange={handleChange}
-          name='email'
+          name="email"
           value={email}
         />
 
         <FormInput
-          label='Password'
-          type='password'
+          label="Password"
+          type="password"
           required
           onChange={handleChange}
-          name='password'
+          name="password"
           value={password}
         />
 
-        <div className='buttons-container'>
-          <Button type='submit'>Sign In</Button>
-          <Button type='button' buttonType='google' onClick={signInWithGoogle}>
+        <div className="buttons-container">
+          <Button type="submit">Sign In</Button>
+          <Button type="button" buttonType="google" onClick={signInWithGoogle}>
             Google sign in
           </Button>
-        </div>      
+        </div>
       </form>
-
     </div>
   );
 };
